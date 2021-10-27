@@ -5,7 +5,7 @@
     </div>
 
     <div class="product-info">
-      <h1>{{ product }}</h1>
+      <h1>{{ title }}</h1>
       <p v-if="inStock">In Stock</p>
       <p v-else>Out of Stock</p>
 
@@ -13,13 +13,21 @@
         <li v-for="detail in details" :key="detail">{{ detail }}</li>
       </ul>
 
-      <div v-for="variant in variants" :key="variant.variantId">
-        <p @mouseover="updateProduct(variant.variantImage)">
-          {{ variant.variantColor }}
-        </p>
-      </div>
+      <div
+        v-for="(variant, index) in variants"
+        :key="variant.variantId"
+        class="color-box"
+        :style="{ backgroundColor: variant.variantColor }"
+        @mouseover="updateProduct(index)"
+      ></div>
 
-      <button v-on:click="addToCart">Add to Cart</button>
+      <button
+        v-on:click="addToCart"
+        :disabled="!inStock"
+        :class="{ disabledButton: !inStock }"
+      >
+        Add to Cart
+      </button>
 
       <div class="cart">
         <p>Cart({{ cart }})</p>
@@ -38,13 +46,23 @@ export default {
 
   data() {
     return {
+      brand: "Vue Mastery",
       product: "Socks",
-      image: greenSock,
-      inStock: true,
+      selectedVariant: 0,
       details: ["80% cotton", "20% polyester", "Gender-neutral"],
       variants: [
-        { variantId: 2234, variantColor: "green", variantImage: greenSock },
-        { variantId: 2235, variantColor: "blue", variantImage: blueSock },
+        {
+          variantId: 2234,
+          variantColor: "green",
+          variantImage: greenSock,
+          variantQuantity: 13,
+        },
+        {
+          variantId: 2235,
+          variantColor: "blue",
+          variantImage: blueSock,
+          variantQuantity: 0,
+        },
       ],
       cart: 0,
     };
@@ -54,8 +72,21 @@ export default {
     addToCart() {
       this.cart += 1;
     },
-    updateProduct(variantImage) {
-      this.image = variantImage;
+    updateProduct(index) {
+      this.selectedVariant = index;
+      console.log(index);
+    },
+  },
+
+  computed: {
+    title() {
+      return `${this.brand} ${this.product}`;
+    },
+    image() {
+      return this.variants[this.selectedVariant].variantImage;
+    },
+    inStock() {
+      return this.variants[this.selectedVariant].variantQuantity;
     },
   },
 };
