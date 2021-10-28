@@ -8,6 +8,7 @@
       <h1>{{ title }}</h1>
       <p v-if="inStock">In Stock</p>
       <p v-else>Out of Stock</p>
+      <p>Shipping: {{ shipping }}</p>
 
       <ul>
         <li v-for="detail in details" :key="detail">{{ detail }}</li>
@@ -19,7 +20,7 @@
         class="color-box"
         :style="{ backgroundColor: variant.variantColor }"
         @mouseover="updateProduct(index)"
-      ></div>
+      />
 
       <button
         v-on:click="addToCart"
@@ -28,10 +29,6 @@
       >
         Add to Cart
       </button>
-
-      <div class="cart">
-        <p>Cart({{ cart }})</p>
-      </div>
     </div>
   </div>
 </template>
@@ -42,7 +39,17 @@ import blueSock from "../assets/vmSocks-blue.jpg";
 
 export default {
   name: "Products",
-  props: {},
+  props: {
+    premium: {
+      Type: Boolean,
+      required: true,
+    },
+
+    cart: {
+      Type: Number,
+      required: true,
+    },
+  },
 
   data() {
     return {
@@ -64,13 +71,12 @@ export default {
           variantQuantity: 0,
         },
       ],
-      cart: 0,
     };
   },
 
   methods: {
     addToCart() {
-      this.cart += 1;
+      this.$emit("add-to-cart", this.variants[this.selectedVariant].variantId);
     },
     updateProduct(index) {
       this.selectedVariant = index;
@@ -87,6 +93,12 @@ export default {
     },
     inStock() {
       return this.variants[this.selectedVariant].variantQuantity;
+    },
+    shipping() {
+      if (this.premium) {
+        return "Free";
+      }
+      return 2.99;
     },
   },
 };
@@ -117,13 +129,6 @@ img {
   width: 40px;
   height: 40px;
   margin-top: 5px;
-}
-
-.cart {
-  margin-right: 25px;
-  float: right;
-  border: 1px solid #d8d8d8;
-  padding: 5px 20px;
 }
 
 button {
