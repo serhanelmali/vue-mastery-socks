@@ -30,15 +30,31 @@
         Add to Cart
       </button>
     </div>
+    <product-review @review-submitted="addReview" />
+    <div>
+      <h2>Reviews</h2>
+      <p v-if="!reviews.length">There are no reviews yet.</p>
+      <ul>
+        <li v-for="review in reviews" v-bind:key="review">
+          <p>{{ review.name }}</p>
+          <p>{{ review.rating }}</p>
+          <p>{{ review.review }}</p>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
 import greenSock from "../assets/vmSocks-green.jpg";
 import blueSock from "../assets/vmSocks-blue.jpg";
+import ProductReview from "./ProductReview.vue";
 
 export default {
   name: "Products",
+  components: {
+    ProductReview,
+  },
   props: {
     premium: {
       Type: Boolean,
@@ -71,6 +87,7 @@ export default {
           variantQuantity: 0,
         },
       ],
+      reviews: [],
     };
   },
 
@@ -81,6 +98,9 @@ export default {
     updateProduct(index) {
       this.selectedVariant = index;
       console.log(index);
+    },
+    addReview(productReview) {
+      this.reviews.push(productReview);
     },
   },
 
@@ -144,22 +164,5 @@ button {
 
 .disabledButton {
   background-color: #d8d8d8;
-}
-
-.review-form {
-  width: 30%;
-  padding: 20px;
-  border: 1px solid #d8d8d8;
-}
-
-input {
-  width: 100%;
-  height: 25px;
-  margin-bottom: 20px;
-}
-
-textarea {
-  width: 100%;
-  height: 60px;
 }
 </style>
